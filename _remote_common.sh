@@ -5,65 +5,6 @@
 # SPDX-License-Identifier: GPL-3.0
 # 2023 (C) Philip Oberfichtner <pro@denx.de>
 #############################################
-#
-#
-# This script provides a framework for remotely switching devices on and off,
-# like USB ports or WiFi sockets. All an implementation has to do, is to define
-# the `send_request()` function and define a mapping from human-readable names
-# to device addresses. For example:
-#
-#
-#   +--------------------------------------------------+
-#   |              File: remote_usb                    |
-#   +----+---------------------------------------------+
-#   |  1 | #!/bin/sh                                   |
-#   |  2 |                                             |
-#   |  3 | send_request() {                            |
-#   |  4 |         local addr="$1"                     |
-#   |  5 |         local cmd="$2"                      |
-#   |  6 |                                             |
-#   |  7 |         switch_usb ${addr} ${cmd}           |
-#   |  8 |                                             |
-#   |  9 |         if [ error ]; then                  |  The error message will
-#   | 10 |                 echo "ERROR such and such"  |  be caught and printed
-#   | 11 |                 return 1                    |  by the framework
-#   | 12 |         fi                                  |
-#   | 13 |                                             |
-#   | 14 |         if [ usb_is_on ]; then              |  It's important to echo
-#   | 15 |                 echo on                     |  the current state of
-#   | 16 |         else                                |  the device. An
-#   | 17 |                 echo off                    |  unexpected state makes
-#   | 18 |         fi                                  |  the script fail.
-#   | 19 | }                                           |
-#   | 20 |                                             |
-#   | 21 | . $(dirname $0)/_remote_common.sh           |
-#   +----+---------------------------------------------+
-#
-#   Hereby the command, ${2}, can either be "on", "off" or "status", likewise
-#   the value `echo`ed by `send_request()`.
-#
-#   +---------------------------------------------------+
-#   |              File: remote_usb.cfg                 |
-#   +----+----------------------------------------------+
-#   |  1 | 6-1.4.1 port-1                               |
-#   |  2 | 6-1.4.2 port-2                               |
-#   |  3 | 6-1.4.3 port-3                               |
-#   |  4 | 6-1.4.4 port-4                               |
-#   +----+----------------------------------------------+
-#
-# The first column of remote_usb.cfg, 6-1.4.X, is used as the address argument
-# ${1} for send_request(). The second column is used as command line argument
-# for the remote_usb script.
-#
-# Finally, lets have a look at the most common usage examples:
-#
-#	remote_usb --help
-#	remote_usb list
-#	remote_usb port-2 on
-#	remote_usb port-2 reset
-#	remote_usb port-2 off
-#	remote_usb all off
-#
 
 set -e
 
