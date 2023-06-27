@@ -1,0 +1,66 @@
+#!/bin/sh
+#############################################
+# Remote USB Control
+#
+# SPDX-License-Identifier: GPL-3.0
+# 2023 (C) Philip Oberfichtner <pro@denx.de>
+#############################################
+
+usb_get_cmdline() {
+	# For example:
+	# 	USB_ADDR="7-1.4.1p3"
+	# becomes
+	#	USB_CMDLINE="-l 7-1.4 -p 3"
+	#
+	local loc port
+
+	loc="${USB_ADDR%p*}"  # Everything before the 'p'
+	port="${USB_ADDR#*p}" # Everything after the 'p'
+
+	if [ -z "${port}" ] || [ -z "${loc}" ]; then
+		echo "Invalid USB address!"
+		return 1
+	fi
+
+	USB_CMDLINE="-l ${loc} -p ${port}"
+}
+
+usb_get_result() {
+	local keyword="$1"
+	local res
+
+	res=$(sed -n "/${keyword}/{n;p}" | awk '{ print $4}')
+
+	case "${res}" in
+		power) res=on;;
+		off)   res=off;;
+		*)     res="Failed to get usb result";;
+	esac
+
+	echo ${res}
+}
+
+usb_get_status() {
+	/sbin/uhubctl ${USB_CMDLINE} | usb_get_result "Current status"
+}
+
+usb_do_cmd() {
+	local action
+
+	case "${USB_CMD}" in
+		status) usb_get_status; return;;
+		on|off) action=${USB_CMD};;
+		*) echo "Invalid USB_CMD!"; return 1;;
+	esac
+
+	/sbin/uhubctl ${USB_CMDLINE} -a ${action} | usb_get_result "New status"
+}
+
+send_request() {
+	USB_ADDR="$1"
+	USB_CMD="$2"
+	usb_get_cmdline
+	usb_do_cmd
+}
+
+. $(dirname $0)/_remote_common.sh

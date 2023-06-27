@@ -1,0 +1,30 @@
+#!/bin/sh
+#############################################
+# Remote Power Control
+#
+# SPDX-License-Identifier: GPL-3.0
+# 2023 (C) Philip Oberfichtner <pro@denx.de>
+#############################################
+
+
+send_request() {
+	local res
+	local addr="$1"
+
+	if [ "$2" = "status" ]; then
+		local cmd=""
+	else
+		local cmd="$2"
+	fi
+
+	res=$(wget 192.168.0.${addr}/cm?cmnd=Power\ ${cmd} -q -O-  | cut -d\" -f4)
+
+	case "${res}" in
+		ON)  res=on;;
+		OFF) res=off;;
+	esac
+
+	echo ${res}
+}
+
+. $(dirname $0)/_remote_common.sh
