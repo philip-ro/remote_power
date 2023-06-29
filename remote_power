@@ -6,6 +6,13 @@
 # 2023 (C) Philip Oberfichtner <pro@denx.de>
 #############################################
 
+reset_pre_hook() {
+	[ "${TARGET}" = "bosch" ] && remote_usb bosch off
+}
+
+reset_post_hook() {
+	[ "${TARGET}" = "bosch" ] && remote_usb bosch on
+}
 
 send_request() {
 	local res
