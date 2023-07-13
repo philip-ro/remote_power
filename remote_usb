@@ -22,7 +22,7 @@ usb_get_cmdline() {
 		return 1
 	fi
 
-	USB_CMDLINE="-l ${loc} -p ${port}"
+	USB_CMDLINE="-L ${loc} -p ${port}"
 }
 
 usb_get_result() {
