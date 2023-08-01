@@ -8,9 +8,9 @@
 
 usb_get_cmdline() {
 	# For example:
-	# 	USB_ADDR="7-1.4.1p3"
+	# 	USB_ADDR="3p1"
 	# becomes
-	#	USB_CMDLINE="-l 7-1.4 -p 3"
+	#	USB_CMDLINE="-L 3 -p 1"
 	#
 	local loc port
 
