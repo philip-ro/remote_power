@@ -1,0 +1,56 @@
+#!/bin/sh
+#############################################
+# Remote Power Control
+#
+# SPDX-License-Identifier: GPL-3.0
+# 2023 (C) Philip Oberfichtner <pro@denx.de>
+#############################################
+
+power_get_cmdline() {
+	# For example:
+	#       POWER_ADDR="tasmota-1234%5"
+	# becomes
+	#       POWER_CMDLINE="http://tasmota-1234/cm?cmnd=Power5"
+	#
+	local addr port
+
+	addr="${POWER_ADDR%\%*}"  # Everything before the '%'
+	case "${POWER_ADDR}" in  # If there is a '%',
+		*%*) port="${POWER_ADDR#*%}";;  # everything after it.
+	esac
+
+	if [ -z "${addr}" ]; then
+		echo "Invalid URL/Power address!"
+		return 1
+	fi
+
+	POWER_CMDLINE="http://${addr}/cm?cmnd=Power${port}"
+}
+
+power_do_cmd() {
+	local action
+
+	case "${POWER_CMD}" in
+		status) action="";;
+		on|off) action=${POWER_CMD};;
+		*) echo "Invalid POWER_CMD!"; return 1;;
+	esac
+
+	res=$(wget "${POWER_CMDLINE} ${action}" -q -O- | cut -d\" -f4)
+
+	case "${res}" in
+		ON)  res=on;;
+		OFF) res=off;;
+	esac
+
+	echo ${res}
+}
+
+send_request() {
+	POWER_ADDR="$1"
+	POWER_CMD="$2"
+	power_get_cmdline
+	power_do_cmd
+}
+
+. $(dirname $0)/_remote_common.sh
