@@ -1,15 +1,20 @@
 #!/bin/sh
-#############################################
+####################################################
 # Remote Power Framework
 #
 # SPDX-License-Identifier: GPL-3.0
-# 2023 (C) Philip Oberfichtner <pro@denx.de>
-#############################################
+# 2023-2024 (C) Philip Oberfichtner <pro@denx.de>
+####################################################
 
 set -e
 
 THIS_SCRIPT="$0"
 CFG_FILE="${THIS_SCRIPT}.cfg"
+
+cat_cfg() {
+	# Ignore empty lines and comments
+	sed '/^$/d ; /^#/d' < ${CFG_FILE}
+}
 
 usage () {
 	local script_name=$(basename ${THIS_SCRIPT})
@@ -30,7 +35,20 @@ name_to_addr () {
 			echo ${addr}
 			return 0
 		fi
-	done < ${CFG_FILE}
+
+	# The following construct is a bit odd. I would have preferred to use
+	#
+	# 	cat_cfg | while read ...
+	#
+	# But, apparently, in that case, 'while' opens a subshell, such that the
+	# return statement does not have the desired effect.
+	#
+	# The following here-document-construct resolves the issue. See this
+	# post for more information:
+	# https://stackoverflow.com/questions/16854280/a-variable-modified-inside-a-while-loop-is-not-remembered#16855194
+	done <<-EOF
+		$(cat_cfg)
+	EOF
 
 	printf 'Target "%s" not found!\n' "${TARGET}" >&2
 	return 1
@@ -82,14 +100,14 @@ do_reset () {
 }
 
 do_forall () {
-	while read addr name ; do
+	cat_cfg | while read addr name ; do
 		${THIS_SCRIPT} "${name}" "$1" || true
-	done < ${CFG_FILE}
+	done
 }
 
 if [ "$1" = "list" ]; then
 	printf "\n%s\t%s\n\n" address target
-	cat ${CFG_FILE}
+	cat_cfg
 	printf "\n"
 	exit
 fi

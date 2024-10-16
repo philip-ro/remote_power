@@ -16,7 +16,7 @@ USB ports or WiFi sockets. These are the most common usage examples::
 Implementation Example
 ======================
 
-There are detailed implementations examples contained in this repo. But below
+There are detailed implementation examples contained in this repo. But below
 is an overview of what an implementation has to look like. All that has to be
 done, is to define the ``send_request()`` function and a mapping from
 human-readable names to device addresses::
@@ -56,9 +56,11 @@ human-readable names to device addresses::
   +---------------------------------------------------+
   |              File: remote_power.cfg               |
   +----+----------------------------------------------+
-  |  1 | 192.168.0.11 socket1                         |
-  |  2 | 192.168.0.12 socket2                         |
-  |  3 | 192.168.0.13 socket3                         |
+  |  1 | # Lines beginning with '#' get ignored       |
+  |  2 |                                              |
+  |  3 | 192.168.0.11 socket1                         |
+  |  4 | 192.168.0.12 socket2                         |
+  |  5 | 192.168.0.13 socket3                         |
   +----+----------------------------------------------+
 
 Hereby the command ``${2}`` is either ``on``, ``off`` or ``status``.  The value
