@@ -66,4 +66,4 @@ send_request() {
 	usb_do_cmd
 }
 
-. $(dirname $0)/_remote_common.sh
+. $(dirname $(realpath $0))/_remote_common.sh
