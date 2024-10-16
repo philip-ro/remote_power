@@ -1,10 +1,10 @@
 #!/bin/sh
-#############################################
+####################################################
 # Remote USB Control
 #
 # SPDX-License-Identifier: GPL-3.0
-# 2023 (C) Philip Oberfichtner <pro@denx.de>
-#############################################
+# 2023-2024 (C) Philip Oberfichtner <pro@denx.de>
+####################################################
 
 usb_get_cmdline() {
 	# For example:
@@ -22,6 +22,9 @@ usb_get_cmdline() {
 		return 1
 	fi
 
+	# I decided using the depth (-L) for specifying the hub location. It
+	# works fine in the simple setup the I have. In more complex
+	# configurations -e, -l or -s may be more adequate.
 	USB_CMDLINE="-L ${loc} -p ${port}"
 }
 

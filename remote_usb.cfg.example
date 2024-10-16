@@ -1,7 +1,11 @@
-3p3	port-1
+# Level 3 for the first hub
+3p1	port-1
 3p2	port-2
-3p1	port-3
-4p3	port-4
+3p3	port-3
+# 3p4 is where the second hub is connected to.
+
+# Level 4 for the second hub
+4p1	port-4
 4p2	port-5
-4p1	port-6
+4p3	port-6
 4p4	port-7
